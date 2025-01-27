@@ -1,7 +1,6 @@
 'use client'
 
-import { getProfileInfo, parseXML, setCookie } from "@/shared/lib"
-import axios from "axios"
+import { getProfileInfo } from "@/shared/lib"
 import { useRouter } from "next/navigation"
 import { SubmitHandler, useForm } from "react-hook-form"
 
