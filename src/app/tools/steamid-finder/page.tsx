@@ -1,5 +1,6 @@
 'use client'
 
+import { getProfileInfo, parseXML, setCookie } from "@/shared/lib"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { SubmitHandler, useForm } from "react-hook-form"
@@ -8,52 +9,14 @@ type FormData = {
     id: string
 }
 
-type SteamInfo = {
-    steamID: string | null
-    avatar: string | null
-    regDate: string | null
-    onlineState: string | null
-}
-
-function parseXML(xmlString: string): SteamInfo {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlString, "application/xml");
-
-    // Проверяем на наличие ошибок парсинга
-    const parseError = xmlDoc.querySelector("parsererror");
-    if (parseError) {
-        throw new Error("Error parsing XML: " + parseError.textContent);
-    }
-
-    // Пример извлечения данных
-    const steamID = xmlDoc.getElementsByTagName("steamID64")[0].childNodes[0].nodeValue;
-    const avatar = xmlDoc.getElementsByTagName("avatarFull")[0].childNodes[0].nodeValue;
-    const regDate = xmlDoc.getElementsByTagName("memberSince")[0].childNodes[0].nodeValue;
-    const onlineState = xmlDoc.getElementsByTagName("onlineState")[0].childNodes[0].nodeValue;
-
-    return { steamID, avatar, regDate, onlineState };
-}
-
 export default function SteamIdFinder() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
     const { push } = useRouter()
 
     const onSubmit: SubmitHandler<FormData> = async (steamid64) => {
         try {
-            const response = await axios.get(`/api/steam-profile`, {
-                params: {
-                    steamId: steamid64.id
-                }
-            })
-            const data = parseXML(response.data)
-            sessionStorage.setItem(
-                "steamInfo",
-                JSON.stringify({
-                    data,
-                    expiresAt: Date.now() + 60 * 60 * 1000, // Кеш на 1 час
-                })
-            );
-            push(`/profile/${data.steamID}`)
+            getProfileInfo(steamid64.id)
+            push(`/profile/${steamid64.id}`)
             console.log('SUCCESS')
         } catch (err) {
             console.log(err)

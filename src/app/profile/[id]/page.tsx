@@ -1,7 +1,8 @@
 'use client'
 
+import { getCookie, getProfileInfo } from "@/shared/lib";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 type SteamInfo = {
     steamID: string | null
@@ -10,24 +11,31 @@ type SteamInfo = {
     onlineState: string | null
 }
 
-export default function UserProfile() {
+export default function UserProfile({ params }: { params: Promise<{ id: string }> }) {
 
     const [data, setData] = useState<SteamInfo | null>(null);
+    const { id } = use(params)
+    const steamInfo = getCookie(id)
 
     useEffect(() => {
-        const cached = sessionStorage.getItem("steamInfo");
-        if (cached) {
-            const { data, expiresAt } = JSON.parse(cached);
+        const fetchData = async (steamId: string) => {
+            const info = await getProfileInfo(steamId)
+            setData(info.data)
+        }
 
-            if (Date.now() < expiresAt) {
-                // Данные валидны
-                setData(data);
-            } else {
-                // Данные устарели
-                sessionStorage.removeItem("steamInfo");
+        if (!!steamInfo) {
+            setData(steamInfo)
+        } else {
+            try {
+                fetchData(id)
+            }
+            catch (err) {
+                console.log(err)
             }
         }
-    }, []);
+    }, [])
+
+
 
     return (
         <>

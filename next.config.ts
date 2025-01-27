@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname:'avatars.cloudflare.steamstatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname:'avatars.fastly.steamstatic.com',
       }
     ]
   }
