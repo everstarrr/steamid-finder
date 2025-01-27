@@ -33,7 +33,7 @@ export default function UserProfile({ params }: { params: Promise<{ id: string }
                 console.log(err)
             }
         }
-    }, [id, steamInfo])
+    }, [])
 
 
 
