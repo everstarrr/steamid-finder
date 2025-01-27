@@ -17,7 +17,7 @@ export async function GET(req) {
       status: 200,
       headers: { "Content-Type": "application/xml" },
     });
-  } catch (error) {
+  } catch {
     return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

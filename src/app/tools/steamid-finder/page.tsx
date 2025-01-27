@@ -1,8 +1,7 @@
 'use client'
 
-import axios, { AxiosResponse } from "axios"
+import axios from "axios"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 
 type FormData = {
