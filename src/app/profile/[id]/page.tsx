@@ -30,6 +30,7 @@ export default async function UserProfile({ params }: { params: Promise<{ id: st
                 {!!info.data?.steamID &&
                     <p>Steam ID: {info.data.steamID}</p>
                 }
+                <p>Текущая дата: {Date.now()}</p>
             </section>
         </>
     )
