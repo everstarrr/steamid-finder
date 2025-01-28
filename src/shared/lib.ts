@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Cookies from 'js-cookie'
+import { XMLParser } from 'fast-xml-parser'
 
 type SteamInfo = {
   steamID: string | null
@@ -9,57 +9,22 @@ type SteamInfo = {
 }
 
 export function parseXML(xmlString: string): SteamInfo {
-  const parser = new DOMParser();
-  const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+  const parser = new XMLParser();
+  const xmlDoc = parser.parse(xmlString);
 
-  // Проверяем на наличие ошибок парсинга
-  const parseError = xmlDoc.querySelector("parsererror");
-  if (parseError) {
-    throw new Error("Error parsing XML: " + parseError.textContent);
-  }
-
-  // Пример извлечения данных
-  const steamID = xmlDoc.getElementsByTagName("steamID64")[0].childNodes[0].nodeValue;
-  const avatar = xmlDoc.getElementsByTagName("avatarFull")[0].childNodes[0].nodeValue;
-  const regDate = xmlDoc.getElementsByTagName("memberSince")[0].childNodes[0].nodeValue;
-  const onlineState = xmlDoc.getElementsByTagName("onlineState")[0].childNodes[0].nodeValue;
+  const steamID = xmlDoc["profile"]["steamID64"]
+  const avatar = xmlDoc["profile"]["avatarFull"]
+  const regDate = xmlDoc["profile"]["memberSince"]
+  const onlineState = xmlDoc["profile"]["onlineState"]
 
   return { steamID, avatar, regDate, onlineState };
 }
 
-// Функция для установки cookie
-export function setCookie(name: string, value: any, options = {}) {
-  // Преобразуем объект в строку JSON, если это необходимо
-  if (typeof value === 'object') {
-    value = JSON.stringify(value);
-  }
-
-  Cookies.set(name, value, options);
-}
-
-// Функция для получения cookie
-export function getCookie(name: string) {
-  const cookieValue = Cookies.get(name);
-
-  if (cookieValue) {
-    try {
-      // Преобразуем строку JSON обратно в объект
-      return JSON.parse(cookieValue);
-    } catch (e) {
-      // Если cookie не является JSON, просто возвращаем строку
-      return cookieValue;
-    }
-  }
-  return null;
-}
-
 export async function getProfileInfo(steamId: string) {
-  const response = await axios.get(`/api/steam-profile`, {
-    params: {
-      steamId: steamId
-    }
+  const response = await axios.get(`http://steamid-finder-theta.vercel.app/api/steam-profile`, {
+    params: { steamId: steamId }
   })
   const data = parseXML(response.data)
-  setCookie(steamId, JSON.stringify(data), { expires: Date.now() + 60 * 60 * 1000 })
+  console.log(data)
   return { data }
 }
