@@ -23,6 +23,9 @@ export function parseXML(xmlString: string): SteamInfo {
 export async function getProfileInfo(steamId: string) {
   const response = await axios.get(`https://steamid-finder-theta.vercel.app/api/steam-profile`, {
     params: { steamId: steamId },
+    headers: {
+      'Cache-Control': 'max-age=3600', // Кеширование на клиенте (1 час)
+    },
   })
   const data = parseXML(response.data)
   console.log(data)
