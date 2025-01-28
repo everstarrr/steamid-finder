@@ -1,7 +1,9 @@
 import { getProfileInfo } from "@/shared/lib";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import Image from "next/image";
 
 export default async function UserProfile({ params }: { params: Promise<{ id: string }> }) {
+    cacheLife({ expire: 60 * 60 })
 
     const { id } = await params
 
