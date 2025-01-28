@@ -22,7 +22,7 @@ export function parseXML(xmlString: string): SteamInfo {
 
 export async function getProfileInfo(steamId: string) {
   const response = await axios.get(`http://steamid-finder-theta.vercel.app/api/steam-profile`, {
-    params: { steamId: steamId }
+    params: { steamId: steamId },
   })
   const data = parseXML(response.data)
   console.log(data)
