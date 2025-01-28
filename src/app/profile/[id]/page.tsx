@@ -32,7 +32,7 @@ export default async function UserProfile({ params }: { params: Promise<{ id: st
                 {!!info.data?.steamID &&
                     <p>Steam ID: {info.data.steamID}</p>
                 }
-                <p>Текущая дата: {new Date().toLocaleTimeString()}</p>
+                <p>Текущее время: {new Date().toLocaleTimeString()}</p>
             </section>
         </>
     )

@@ -17,13 +17,20 @@ export async function GET(req) {
         const response = await axios.get(
             `https://steamcommunity.com/profiles/${steamId}?xml=1`
         );
-        return new Response(response.data, {
-            status: 200,
-            headers: {
-                "Content-Type": "application/xml",
-                "Cache-Control": "public, max-age=3600",
+        const requestDate = new Date().toLocaleTimeString();
+        return new Response(
+            {
+                data: response.data,
+                time: requestDate,
             },
-        });
+            {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/xml",
+                    "Cache-Control": "public, max-age=3600",
+                },
+            }
+        );
     } catch {
         return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
             status: 500,
