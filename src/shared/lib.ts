@@ -6,6 +6,7 @@ type SteamInfo = {
   avatar: string | null
   regDate: string | null
   onlineState: string | null
+  requestDate: string | null
 }
 
 export function parseXML(xmlString: string): SteamInfo {
@@ -16,8 +17,9 @@ export function parseXML(xmlString: string): SteamInfo {
   const avatar = xmlDoc["profile"]["avatarFull"]
   const regDate = xmlDoc["profile"]["memberSince"]
   const onlineState = xmlDoc["profile"]["onlineState"]
+  const requestDate = xmlDoc["profile"]["requestDate"]
 
-  return { steamID, avatar, regDate, onlineState };
+  return { steamID, avatar, regDate, onlineState, requestDate};
 }
 
 export async function getProfileInfo(steamId: string) {

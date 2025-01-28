@@ -1,4 +1,5 @@
 import axios from "axios";
+import { XMLBuilder } from 'fast-xml-parser';
 
 export async function GET(req) {
     const { searchParams } = new URL(req.url);
@@ -17,20 +18,26 @@ export async function GET(req) {
         const response = await axios.get(
             `https://steamcommunity.com/profiles/${steamId}?xml=1`
         );
-        const requestDate = new Date().toLocaleTimeString();
+        // Получаем текущее время
+        const requestDate = new Date().toISOString();
+
+        // Парсим XML
+        const parser = new XMLBuilder({});
+        const xmlObj = parser.parse(response.data);
+
+        // Добавляем время в XML
+        xmlObj.requestDate = requestDate;
+
+        // Преобразуем обратно в XML
+        const updatedXml = parser.build(xmlObj);
         return new Response(
-            {
-                data: response.data,
-                time: requestDate,
+          updatedXml, {
+            status: 200,
+            headers: {
+                "Content-Type": "application/xml",
+                "Cache-Control": "public, max-age=3600",
             },
-            {
-                status: 200,
-                headers: {
-                    "Content-Type": "application/xml",
-                    "Cache-Control": "public, max-age=3600",
-                },
-            }
-        );
+        });
     } catch {
         return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
             status: 500,
