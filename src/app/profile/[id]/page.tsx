@@ -1,6 +1,8 @@
 import { getProfileInfo } from "@/shared/lib";
 import Image from "next/image";
 
+export const revalidate = 60;
+
 export default async function UserProfile({ params }: { params: Promise<{ id: string }> }) {
 
     const { id } = await params
@@ -30,7 +32,7 @@ export default async function UserProfile({ params }: { params: Promise<{ id: st
                 {!!info.data?.steamID &&
                     <p>Steam ID: {info.data.steamID}</p>
                 }
-                <p>Текущая дата: {Date.now()}</p>
+                <p>Текущая дата: {new Date().toLocaleTimeString()}</p>
             </section>
         </>
     )
