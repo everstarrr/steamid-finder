@@ -7,7 +7,10 @@ export async function GET(req) {
     if (!steamId) {
         return new Response(JSON.stringify({ error: "steamId is required" }), {
             status: 400,
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "public, max-age=3600",
+            },
         });
     }
 
