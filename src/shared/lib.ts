@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { XMLParser } from 'fast-xml-parser'
 
 type SteamInfo = {
@@ -6,7 +5,6 @@ type SteamInfo = {
   avatar: string | null
   regDate: string | null
   onlineState: string | null
-  requestDate: string | null
 }
 
 export function parseXML(xmlString: string): SteamInfo {
@@ -17,19 +15,22 @@ export function parseXML(xmlString: string): SteamInfo {
   const avatar = xmlDoc["profile"]["avatarFull"]
   const regDate = xmlDoc["profile"]["memberSince"]
   const onlineState = xmlDoc["profile"]["onlineState"]
-  const requestDate = xmlDoc["profile"]["requestDate"]
 
-  return { steamID, avatar, regDate, onlineState, requestDate};
+  return { steamID, avatar, regDate, onlineState };
 }
 
 export async function getProfileInfo(steamId: string) {
-  const response = await axios.get(`https://steamid-finder-theta.vercel.app/api/steam-profile`, {
-    params: { steamId: steamId },
+  const res = await fetch(`https://steamid-finder-theta.vercel.app/api/steam-profile?steamId=${steamId}`, {
+    next: {
+      revalidate: 60
+    },
     headers: {
       'Cache-Control': 'max-age=60', // Кеширование на клиенте (1 час)
     },
   })
+  const response = await res.json()
+  console.log(response.data)
+  const date = response.date
   const data = parseXML(response.data)
-  console.log(data)
-  return { data }
+  return { data, date }
 }

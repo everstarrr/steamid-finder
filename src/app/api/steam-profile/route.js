@@ -1,5 +1,5 @@
 import axios from "axios";
-import { XMLBuilder } from 'fast-xml-parser';
+import { NextResponse } from "next/server";
 
 export async function GET(req) {
     const { searchParams } = new URL(req.url);
@@ -18,26 +18,28 @@ export async function GET(req) {
         const response = await axios.get(
             `https://steamcommunity.com/profiles/${steamId}?xml=1`
         );
-        // Получаем текущее время
-        const requestDate = new Date().toISOString();
 
-        // Парсим XML
-        const parser = new XMLBuilder({});
-        const xmlObj = parser.parse(response.data);
-
-        // Добавляем время в XML
-        xmlObj.requestDate = requestDate;
-
-        // Преобразуем обратно в XML
-        const updatedXml = parser.build(xmlObj);
-        return new Response(
-          updatedXml, {
-            status: 200,
-            headers: {
-                "Content-Type": "application/xml",
-                "Cache-Control": "public, max-age=3600",
+        return NextResponse.json(
+            {
+                data: response.data,
+                date: new Date().toLocaleTimeString(),
             },
-        });
+            {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/xml",
+                },
+            }
+        );
+
+        // // Преобразуем обратно в XML
+        // return new Response(response.data, {
+        //     status: 200,
+        //     headers: {
+        //         "Content-Type": "application/xml",
+        //         "Cache-Control": "public, max-age=3600, stale-while-revalidate=60",
+        //     },
+        // });
     } catch {
         return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
             status: 500,
